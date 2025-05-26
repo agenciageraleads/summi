@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const BASEROW_API_KEY = 'e5362baf-c777-4d57-a609-6eaf1f9e87f6';
     
     // IDs das tabelas no Baserow
-    const USERS_TABLE_ID = config.users_table_id;
+    const USERS_TABLE_ID = 696;
     const CONNECTIONS_TABLE_ID = config.connections_table_id;
     
     // Elementos do DOM para login
