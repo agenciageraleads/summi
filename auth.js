@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formattedPhone = phone.replace(/\D/g, '');
             
             // Buscar usuário no Baserow pelo telefone
-            const response = await fetch(`${BASEROW_API_URL}/database/rows/table/${USERS_TABLE_ID}/?user_field_names=true&filter__field_Número__equal=${encodeURIComponent(formattedPhone)}`, {
+            const response = await fetch(`${BASEROW_API_URL}/database/rows/table/${USERS_TABLE_ID}/?user_field_names=true&filter__field_Numero__equal=${encodeURIComponent(formattedPhone)}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Token ${BASEROW_API_KEY}`,
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formattedPhone = phone.replace(/\D/g, '');
             
             // Verificar se o telefone já existe
-            const checkResponse = await fetch(`${BASEROW_API_URL}/database/rows/table/${USERS_TABLE_ID}/?user_field_names=true&filter__field_Número__equal=${encodeURIComponent(formattedPhone)}`, {
+            const checkResponse = await fetch(`${BASEROW_API_URL}/database/rows/table/${USERS_TABLE_ID}/?user_field_names=true&filter__field_Numero__equal=${encodeURIComponent(formattedPhone)}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Token ${BASEROW_API_KEY}`,
