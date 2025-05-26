@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurações do Baserow
     const config = JSON.parse(baserowConfig);
     const BASEROW_API_URL = 'https://baserow.borgesai.com/api';
-    const BASEROW_API_KEY = 'e5362baf-c777-4d57-a609-6eaf1f9e87f6';
+    const BASEROW_API_KEY = 'dIkBVLKuBMKf1lOhUALfhdJQYUNJNdht';
     
     // IDs das tabelas no Baserow
     const USERS_TABLE_ID = 696;
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Adaptamos para usar os nomes de campos que vimos na tabela
             const userData = {
                 "Nome": name,
-                "Número": formattedPhone,
+                "Número": Number(formattedPhone),
                 "senha": password,
                 "Status": "ativo" // Valor padrão
             };
