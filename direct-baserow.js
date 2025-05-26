@@ -3,7 +3,7 @@
 document.addEventListener("DOMContentLoaded", function() {
   /* ========= Configurações ========= */
   const BASEROW_API_URL = "https://baserow.borgesai.com/api";
-  const BASEROW_API_KEY = "e5362baf-c777-4d57-a609-6eaf1f9e87f6";
+  const BASEROW_API_KEY = "dIkBVLKuBMKf1lOhUALfhdJQYUNJNdht";
   const USERS_TABLE_ID  = 696;   // Tabela Usuários
   const CONVERSATIONS_TABLE_ID = 695; // Tabela Conversas
 
