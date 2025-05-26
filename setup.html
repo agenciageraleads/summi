@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração - WhatsApp Connect</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .setup-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .status-container {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+        
+        #status {
+            font-weight: bold;
+        }
+        
+        .btn {
+            display: none;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="setup-container">
+            <div class="logo">
+                <img src="whatsapp-logo.png" alt="WhatsApp Logo">
+                <h1>WhatsApp Connect</h1>
+            </div>
+            
+            <h2>Configuração Inicial</h2>
+            
+            <p>Estamos verificando e configurando o ambiente para você.</p>
+            
+            <div class="status-container">
+                <p id="status">Verificando campo de senha...</p>
+            </div>
+            
+            <button id="continue-btn" class="btn btn-primary" style="display: none;" onclick="window.location.href='register.html'">Continuar para Registro</button>
+            <button id="retry-btn" class="btn btn-secondary" style="display: none;" onclick="window.location.reload()">Tentar Novamente</button>
+        </div>
+    </div>
+    
+    <div id="loading-overlay" class="loading-overlay active">
+        <div class="spinner"></div>
+        <p>Configurando ambiente...</p>
+    </div>
+    
+    <script src="create-password-field.js"></script>
+    <script>
+        // Esconder loading quando o script terminar
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loading-overlay').classList.remove('active');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

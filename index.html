@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Connect - Redirecionando...</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        // Redireciona para a página de registro assim que o DOM estiver pronto
+        document.addEventListener("DOMContentLoaded", function() {
+            window.location.href = "register.html";
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+             <div class="logo">
+                <img src="whatsapp-logo.png" alt="WhatsApp Logo">
+                <h1>WhatsApp Connect</h1>
+            </div>
+            <p>Redirecionando para a página de registro...</p>
+             <div id="loading-overlay" class="loading-overlay active"> <!-- Mantém o loading visível -->
+                <div class="spinner"></div>
+                <p>Carregando...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
