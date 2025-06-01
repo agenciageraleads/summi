@@ -1,77 +1,299 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - WhatsApp Connect</title>
+    <title>Painel - WhatsApp Connect</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos existentes do dashboard... */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .dashboard-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info span {
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .logout-btn:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        
+        .dashboard-content {
+            flex: 1;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .dashboard-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px; /* Adicionado espaço */
+        }
+
+        /* Estilos para o formulário de conexão */
+        .connect-form-container {
+            max-width: 500px; /* Limitar largura */
+            margin-bottom: 30px; /* Espaço abaixo do form */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            width: 100%; /* Botão ocupa largura total */
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Estilos da lista de conexões (mantidos) */
+        .connections-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .connection-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .connection-item:last-child {
+            border-bottom: none;
+        }
+        
+        .connection-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .connection-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .connection-phone {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .connection-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-connected {
+            background-color: #e7f7ed;
+            color: #28a745;
+        }
+        
+        .status-disconnected {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #ffc107;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+        }
+        
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="register-container">
-        <h1>Registrar</h1>
-        <form id="register-form">
-            <div class="form-group">
-                <label for="name">Nome</label>
-                <input type="text" id="name" name="name" placeholder="Seu nome completo" required>
-                <span class="error-message" id="name-error"></span>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>WhatsApp Connect</h1>
+            <div class="user-info">
+                <span id="user-name">Visitante (Teste)</span> <!-- Nome temporário -->
+                <button class="logout-btn" id="logout-btn">Sair</button>
             </div>
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" name="email" placeholder="seu@email.com" required>
-                <span class="error-message" id="email-error"></span>
+        </header>
+        
+        <main class="dashboard-content">
+            <!-- Formulário de Conexão Movido para Cá -->
+            <div class="dashboard-card connect-form-container">
+                <h2>Conectar Novo WhatsApp</h2>
+                <form id="connect-form">
+                    <div class="form-group">
+                        <label for="connect-name">Nome da Conexão (Opcional)</label>
+                        <input type="text" id="connect-name" name="connect-name" placeholder="Ex: WhatsApp Pessoal">
+                        <span class="error-message" id="connect-name-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="connect-phone">Seu Número de Telefone</label>
+                        <input type="text" id="connect-phone" name="connect-phone" placeholder="(00) 00000-0000" required>
+                        <span class="error-message" id="connect-phone-error"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Gerar QR Code</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="phone">Telefone</label>
-                <input type="text" id="phone" name="phone" placeholder="(00) 00000-0000">
-                <span class="error-message" id="phone-error"></span>
+
+            <!-- Lista de Conexões Existentes (Mantida) -->
+            <div class="dashboard-card">
+                <h2>Suas Conexões WhatsApp</h2>
+                <div id="connections-container">
+                    <!-- Conteúdo será carregado via JS -->
+                     <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        <p>Carregando suas conexões...</p> 
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" placeholder="Senha" required>
-                <span class="error-message" id="password-error"></span>
-            </div>
-            <div class="form-group">
-                <label for="confirm-password">Confirmar Senha</label>
-                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirme a senha" required>
-                <span class="error-message" id="confirm-password-error"></span>
-            </div>
-            <button type="submit" class="btn btn-primary">Registrar</button>
-        </form>
+        </main>
     </div>
 
-    <script type="module">
-        import { register } from './auth.js';
+    <!-- Modal do QR Code (Mantido) -->
+    <div class="modal" id="qrcode-modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Escaneie o QR Code</h2>
+            <p>Abra o WhatsApp no seu celular e escaneie o QR Code abaixo para conectar</p>
+            <div class="qrcode-container">
+                <img id="qrcode-image" src="" alt="QR Code">
+            </div>
+            <div class="status-container" id="status-container">
+                <p>Status da conexão: <span id="connection-status">Verificando...</span></p>
+            </div>
+            <div class="success-message" id="success-message">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <p>Conectado com sucesso!</p>
+            </div>
+        </div>
+    </div>
 
-        const form = document.getElementById('register-form');
+    <!-- Loading Overlay (Mantido) -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Processando sua solicitação...</p>
+    </div>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const nome  = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const fone  = document.getElementById('phone').value;
-            const senha = document.getElementById('password').value;
-            const confirmar = document.getElementById('confirm-password').value;
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-              alert('E-mail inválido');
-              return;
-            }
-
-            if (senha !== confirmar) {
-                alert('As senhas não coincidem');
-                return;
-            }
-
-            try {
-                await register(nome, email, fone, senha);
-                alert('Registro realizado com sucesso!');
-                window.location.href = 'login.html';
-            } catch (error) {
-                alert('Erro ao registrar: ' + error.message);
-            }
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="direct-baserow.js"></script> <!-- Para funções de auth como logout -->
+    <script src="dashboard.js"></script>
 </body>
 </html>
