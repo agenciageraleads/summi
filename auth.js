@@ -11,12 +11,10 @@ const phoneToE164 = br => "+55" + br.replace(/\D/g, "");
 const phoneDigits = br => Number(br.replace(/\D/g, ""));
 
 /* ---------- REGISTRO ---------- */
-export async function register(nome, telefoneBR, senha) {
-  const phoneE164 = phoneToE164(telefoneBR);
-
+export async function register(nome, email, telefoneBR, senha) {
   /* 1. Supabase Auth */
   const { data, error } = await supabase.auth.signUp({
-    phone: phoneE164,
+    email,
     password: senha,
     options: { data: { nome } }
   });
@@ -27,6 +25,7 @@ export async function register(nome, telefoneBR, senha) {
     id_usuario: data.user.id,
     Nome: nome,
     Numero: phoneDigits(telefoneBR),
+    email,
     Status: "ativo"
   });
 
@@ -34,10 +33,9 @@ export async function register(nome, telefoneBR, senha) {
 }
 
 /* ---------- LOGIN ---------- */
-export async function login(telefoneBR, senha) {
-  const phoneE164 = phoneToE164(telefoneBR);
+export async function login(email, senha) {
   const { data, error } = await supabase.auth.signInWithPassword({
-    phone: phoneE164,
+    email,
     password: senha
   });
   if (error) throw error;
