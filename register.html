@@ -22,6 +22,12 @@
                     <input type="text" id="name" name="name" placeholder="Digite seu nome completo">
                     <span class="error-message" id="name-error"></span>
                 </div>
+
+                <div class="form-group">
+                  <label for="email">E‑mail</label>
+                  <input type="email" id="email" name="email" placeholder="seu@email.com">
+                  <span class="error-message" id="email-error"></span>
+                </div>
                 
                 <div class="form-group">
                     <label for="phone">Telefone</label>
@@ -73,8 +79,9 @@
 
   document.getElementById('register-form').addEventListener('submit', async e => {
     e.preventDefault();
-    const nome  = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
     const fone  = document.getElementById('phone').value;
+    const nome  = document.getElementById('name').value.trim();
     const senha = document.getElementById('password').value;
     const confirmar = document.getElementById('confirm-password').value;
     if (senha !== confirmar) {
@@ -84,7 +91,7 @@
     try {
       // Mostra loading
       document.getElementById('loading-overlay').classList.add('active');
-      await register(nome, fone, senha);
+      await register(nome, email, fone, senha);
       alert('Conta criada! Faça login.');
       location.href = 'login.html';
     } catch (err) {
