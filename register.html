@@ -28,12 +28,12 @@
                   <input type="email" id="email" name="email" placeholder="seu@email.com">
                   <span class="error-message" id="email-error"></span>
                 </div>
-                
                 <div class="form-group">
                     <label for="phone">Telefone</label>
                     <input type="text" id="phone" name="phone" placeholder="(00) 00000-0000">
                     <span class="error-message" id="phone-error"></span>
                 </div>
+                
                 
                 <div class="form-group">
                     <label for="password">Senha</label>
@@ -67,20 +67,11 @@
 <script type="module">
   import { register } from './auth.js';
 
-  // Formata telefone para (00) 00000-0000 enquanto digita
-  const phoneInput = document.getElementById('phone');
-  phoneInput.addEventListener('input', e => {
-    let v = e.target.value.replace(/\D/g, '');
-    if (v.length > 11) v = v.slice(0, 11);
-    if (v.length > 2)  v = `(${v.slice(0,2)}) ${v.slice(2)}`;
-    if (v.length > 10) v = `${v.slice(0,10)}-${v.slice(10)}`;
-    e.target.value = v;
-  });
 
   document.getElementById('register-form').addEventListener('submit', async e => {
     e.preventDefault();
     const email = document.getElementById('email').value.trim();
-    const fone  = document.getElementById('phone').value;
+    const phone = document.getElementById('phone').value.trim();
     const nome  = document.getElementById('name').value.trim();
     const senha = document.getElementById('password').value;
     const confirmar = document.getElementById('confirm-password').value;
@@ -91,7 +82,7 @@
     try {
       // Mostra loading
       document.getElementById('loading-overlay').classList.add('active');
-      await register(nome, email, fone, senha);
+      await register(nome, email, senha, phone);
       alert('Conta criada! Faça login.');
       location.href = 'login.html';
     } catch (err) {

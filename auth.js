@@ -7,11 +7,10 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* Helpers */
-const phoneToE164 = br => "+55" + br.replace(/\D/g, "");
 const phoneDigits = br => Number(br.replace(/\D/g, ""));
 
 /* ---------- REGISTRO ---------- */
-export async function register(nome, email, telefoneBR, senha) {
+export async function register(nome, email, senha, telefoneBR) {
   /* 1. Supabase Auth */
   const { data, error } = await supabase.auth.signUp({
     email,
