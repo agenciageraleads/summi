@@ -43,7 +43,31 @@
         <p>Processando...</p>
     </div>
     
-    <script src="create-password-field.js"></script>
-    <script src="direct-baserow.js"></script>
+    <script type="module" src="auth.js"></script>
+    <script type="module">
+      import { login } from './auth.js';
+      
+      // Máscara simples para telefone (opcional)
+      const phoneInput = document.getElementById('phone');
+      phoneInput.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 2)  v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+        if (v.length > 10) v = `${v.slice(0, 10)}-${v.slice(10)}`;
+        e.target.value = v;
+      });
+
+      document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fone  = document.getElementById('phone').value;
+        const senha = document.getElementById('password').value;
+        try {
+          await login(fone, senha);
+          window.location.href = 'dashboard.html';
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+    </script>
 </body>
 </html>
