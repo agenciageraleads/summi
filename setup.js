@@ -1,203 +1,102 @@
-// Arquivo setup.js - Configura o ambiente Baserow para a aplicação
-document.addEventListener('DOMContentLoaded', function() {
-    // Configurações do Baserow
+// Arquivo setup.js – Configuração automática do ambiente Baserow
+// Esta versão cria (se necessário) e mapeia as tabelas Usuários e Conversas,
+// salvando os IDs e campos essenciais no localStorage.
+//
+// ► Mantém escalabilidade: basta mudar os valores de DATABASE_NAME, USERS_TABLE_NAME
+//   e CONVERSATIONS_TABLE_NAME se quiser usar outro workspace.
+//
+document.addEventListener('DOMContentLoaded', () => {
+  (async () => {
+    /* ====================== CONFIGURÁVEIS ====================== */
     const BASEROW_API_URL = 'https://baserow.borgesai.com/api';
-    const BASEROW_API_KEY = 'e5362baf-c777-4d57-a609-6eaf1f9e87f6';
-    
-    // IDs conhecidos do Baserow (identificados na documentação e workspace)
-    const KNOWN_DATABASE_ID = 201; // ID do banco de dados Summi
-    const KNOWN_USERS_TABLE_ID = 696; // ID da tabela Usuários
-    const KNOWN_CONNECTIONS_TABLE_ID = 695; // ID da tabela Conversas (usaremos para conexões)
-    
-    // Elemento para exibir status
-    const setupStatus = document.getElementById('setup-status');
-    const setupProgress = document.getElementById('setup-progress');
-    const setupComplete = document.getElementById('setup-complete');
-    const loadingOverlay = document.getElementById('loading-overlay');
-    
-    // Mostrar loading
-    if (loadingOverlay) loadingOverlay.classList.add('active');
-    
-    // Atualizar status
-    function updateStatus(message, progress) {
-        if (setupStatus) setupStatus.textContent = message;
-        if (setupProgress) setupProgress.style.width = `${progress}%`;
-        console.log(message);
-    }
-    
-    // Verificar se o banco de dados já está configurado
-    async function checkSetup() {
-        try {
-            updateStatus('Verificando configuração...', 10);
-            
-            // Verificar se já temos os IDs das tabelas salvos
-            const config = localStorage.getItem('baserow_config');
-            if (config) {
-                const parsedConfig = JSON.parse(config);
-                if (parsedConfig.database_id && parsedConfig.users_table_id && parsedConfig.connections_table_id) {
-                    // Verificar se as tabelas realmente existem
-                    try {
-                        updateStatus('Verificando tabelas existentes...', 20);
-                        
-                        // Verificar tabela de usuários
-                        const usersResponse = await fetch(`${BASEROW_API_URL}/database/tables/${parsedConfig.users_table_id}/`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Token ${BASEROW_API_KEY}`,
-                                'Content-Type': 'application/json'
-                            }
-                        });
-                        
-                        // Verificar tabela de conexões
-                        const connectionsResponse = await fetch(`${BASEROW_API_URL}/database/tables/${parsedConfig.connections_table_id}/`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Token ${BASEROW_API_KEY}`,
-                                'Content-Type': 'application/json'
-                            }
-                        });
-                        
-                        if (usersResponse.ok && connectionsResponse.ok) {
-                            updateStatus('Configuração existente verificada com sucesso!', 100);
-                            setupComplete.classList.add('active');
-                            
-                            // Redirecionar após 2 segundos
-                            setTimeout(() => {
-                                window.location.href = 'login.html';
-                            }, 2000);
-                            
-                            return true;
-                        }
-                    } catch (error) {
-                        console.error('Erro ao verificar tabelas:', error);
-                    }
-                }
-            }
-            
-            // Se chegou aqui, precisamos verificar as tabelas existentes
-            return false;
-        } catch (error) {
-            console.error('Erro ao verificar configuração:', error);
-            return false;
+    const BASEROW_API_KEY = 'dIkBVLKuBMKf1lOhUALfhdJQYUNJNdht';
+
+    // IDs já conhecidos (caso você recrie a base mude aqui)
+    const DATABASE_ID          = 201;
+    const USERS_TABLE_ID       = 696;
+    const CONVERSATIONS_TABLE_ID = 695;
+
+    // Nomes esperados (usados apenas se for preciso criar tabelas/ campos)
+    const USERS_TABLE_NAME       = 'Usuários';
+    const CONVERSATIONS_TABLE_NAME = 'Conversas';
+
+    // Campos obrigatórios para cada tabela.
+    const REQUIRED_USER_FIELDS = [
+      { name: 'Nome',   type: 'text'  },
+      { name: 'Número', type: 'number' },
+      { name: 'senha',  type: 'text'  },
+      { name: 'Status', type: 'single_select', select_options: [{value: 'ativo'}] }
+    ];
+
+    const REQUIRED_CONV_FIELDS = [
+      { name: 'remoteJid', type: 'text' },
+      { name: 'Nome',      type: 'text' },
+      { name: 'Prioridade',type: 'number' },
+      { name: 'Contexto',  type: 'long_text' }
+    ];
+    /* =========================================================== */
+
+    async function api(path, method = 'GET', body = null) {
+      const opts = {
+        method,
+        headers: {
+          'Authorization': `Token ${BASEROW_API_KEY}`,
+          'Content-Type': 'application/json'
         }
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(`${BASEROW_API_URL}${path}`, opts);
+      if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+      return res.json();
     }
-    
-    // Verificar tabelas existentes
-    async function verifyExistingTables() {
-        try {
-            updateStatus('Verificando tabelas existentes no Baserow...', 30);
-            
-            // Verificar tabela de usuários
-            const usersResponse = await fetch(`${BASEROW_API_URL}/database/tables/${KNOWN_USERS_TABLE_ID}/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Token ${BASEROW_API_KEY}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            // Verificar tabela de conexões
-            const connectionsResponse = await fetch(`${BASEROW_API_URL}/database/tables/${KNOWN_CONNECTIONS_TABLE_ID}/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Token ${BASEROW_API_KEY}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (usersResponse.ok && connectionsResponse.ok) {
-                updateStatus('Tabelas existentes encontradas!', 50);
-                
-                // Verificar campos da tabela de usuários
-                const usersData = await usersResponse.json();
-                console.log('Tabela de usuários:', usersData);
-                
-                // Verificar campos da tabela de conexões
-                const connectionsData = await connectionsResponse.json();
-                console.log('Tabela de conexões:', connectionsData);
-                
-                // Salvar configuração
-                const config = {
-                    database_id: KNOWN_DATABASE_ID,
-                    users_table_id: KNOWN_USERS_TABLE_ID,
-                    connections_table_id: KNOWN_CONNECTIONS_TABLE_ID
-                };
-                
-                localStorage.setItem('baserow_config', JSON.stringify(config));
-                
-                updateStatus('Configuração concluída com sucesso!', 100);
-                setupComplete.classList.add('active');
-                
-                // Redirecionar após 2 segundos
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
-                
-                return true;
-            } else {
-                updateStatus('Tabelas não encontradas. Verificando alternativas...', 40);
-                return false;
-            }
-        } catch (error) {
-            console.error('Erro ao verificar tabelas existentes:', error);
-            updateStatus('Erro ao verificar tabelas. Tentando método alternativo...', 40);
-            return false;
+
+    async function ensureTable(id, name) {
+      try {
+        return await api(`/database/tables/${id}/`);
+      } catch {
+        // Cria tabela se não existir
+        return await api(`/database/tables/database/${DATABASE_ID}/`, 'POST', {
+          name,
+          order: 0
+        });
+      }
+    }
+
+    async function listFields(tableId) {
+      return await api(`/database/fields/table/${tableId}/`);
+    }
+
+    async function ensureFields(tableId, required) {
+      const existing = await listFields(tableId);
+      for (const field of required) {
+        if (!existing.find(f => f.name === field.name)) {
+          await api(`/database/fields/table/${tableId}/`, 'POST', field);
         }
+      }
     }
-    
-    // Função principal para configurar o banco de dados
-    async function setupDatabase() {
-        try {
-            // Verificar se já está configurado
-            const isConfigured = await checkSetup();
-            if (isConfigured) {
-                return;
-            }
-            
-            // Verificar tabelas existentes
-            const tablesExist = await verifyExistingTables();
-            if (tablesExist) {
-                return;
-            }
-            
-            // Se chegou aqui, não conseguimos usar as tabelas existentes
-            // Vamos exibir uma mensagem de erro mais amigável
-            updateStatus('Não foi possível conectar às tabelas existentes no Baserow. Por favor, verifique as configurações e tente novamente.', 0);
-            
-            // Mostrar botão para tentar novamente
-            if (setupComplete) {
-                setupComplete.innerHTML = `
-                    <button class="retry-btn" id="retry-btn">Tentar Novamente</button>
-                `;
-                setupComplete.classList.add('active');
-                
-                // Adicionar evento ao botão
-                document.getElementById('retry-btn').addEventListener('click', function() {
-                    window.location.reload();
-                });
-            }
-        } catch (error) {
-            console.error('Erro ao configurar banco de dados:', error);
-            updateStatus(`Erro: ${error.message}. Por favor, tente novamente.`, 0);
-            
-            // Mostrar botão para tentar novamente
-            if (setupComplete) {
-                setupComplete.innerHTML = `
-                    <button class="retry-btn" id="retry-btn">Tentar Novamente</button>
-                `;
-                setupComplete.classList.add('active');
-                
-                // Adicionar evento ao botão
-                document.getElementById('retry-btn').addEventListener('click', function() {
-                    window.location.reload();
-                });
-            }
-        } finally {
-            // Esconder loading
-            if (loadingOverlay) loadingOverlay.classList.remove('active');
-        }
+
+    try {
+      // 1. Garante tabelas
+      const usersTable = await ensureTable(USERS_TABLE_ID, USERS_TABLE_NAME);
+      const convTable  = await ensureTable(CONVERSATIONS_TABLE_ID, CONVERSATIONS_TABLE_NAME);
+
+      // 2. Garante campos
+      await ensureFields(usersTable.id, REQUIRED_USER_FIELDS);
+      await ensureFields(convTable.id,  REQUIRED_CONV_FIELDS);
+
+      // 3. Salva mapeamento
+      localStorage.setItem('baserow_config', JSON.stringify({
+        database_id: DATABASE_ID,
+        users_table_id: usersTable.id,
+        conversations_table_id: convTable.id
+      }));
+
+      // 4. Redireciona
+      window.location.href = 'login.html';
+    } catch (err) {
+      console.error('Erro no setup Baserow:', err);
+      alert(`Erro ao configurar Baserow: ${err.message}`);
+      // Mantém na página para permitir tentar novamente
     }
-    
-    // Iniciar configuração
-    setupDatabase();
+  })();
 });

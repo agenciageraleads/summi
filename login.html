@@ -18,9 +18,9 @@
             
             <form id="login-form" class="auth-form">
                 <div class="form-group">
-                    <label for="phone">Telefone</label>
-                    <input type="text" id="phone" name="phone" placeholder="(00) 00000-0000">
-                    <span class="error-message" id="phone-error"></span>
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com">
+                    <span class="error-message" id="email-error"></span>
                 </div>
                 
                 <div class="form-group">
@@ -47,22 +47,12 @@
     <script type="module">
       import { login } from './auth.js';
       
-      // Máscara simples para telefone (opcional)
-      const phoneInput = document.getElementById('phone');
-      phoneInput.addEventListener('input', (e) => {
-        let v = e.target.value.replace(/\D/g, '');
-        if (v.length > 11) v = v.slice(0, 11);
-        if (v.length > 2)  v = `(${v.slice(0,2)}) ${v.slice(2)}`;
-        if (v.length > 10) v = `${v.slice(0, 10)}-${v.slice(10)}`;
-        e.target.value = v;
-      });
-
       document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const fone  = document.getElementById('phone').value;
+        const email = document.getElementById('email').value.trim();
         const senha = document.getElementById('password').value;
         try {
-          await login(fone, senha);
+          await login(email, senha);
           window.location.href = 'dashboard.html';
         } catch (err) {
           alert(err.message);
